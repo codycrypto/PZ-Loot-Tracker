@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PZ Item Tracker // Build 42</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="crt" aria-hidden="true"></div>
+<header class="title-screen">
+  <div class="title-inner">
+    <div class="logo">
+      <span class="logo-top">PROJECT ZOMBOID</span>
+      <span class="logo-main">LOOT<span class="hl">LOG</span></span>
+      <span class="press-start blink">&#9654; PRESS START TO SURVIVE</span>
+    </div>
+    <div class="hud">
+      <div class="hud-row"><span class="hud-label">BUILD</span><span id="hud-build">42</span></div>
+      <div class="hud-row"><span class="hud-label">DAY</span>
+        <button class="px-btn tiny" id="day-dec" title="Previous day">-</button>
+        <span id="hud-day">1</span>
+        <button class="px-btn tiny" id="day-inc" title="Next day">+</button></div>
+      <div class="hud-row"><span class="hud-label">FOUND</span><span id="hud-found">0</span></div>
+      <div class="hud-row"><span class="hud-label">WISHLIST</span><span id="hud-want">0</span></div>
+    </div>
+  </div>
+  <div class="hp-bar" title="Overall collection progress (all collection items)"><div class="hp-fill" id="overall-fill"></div><span class="hp-text" id="overall-text">0%</span></div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="px-btn tab active" data-tab="collections" role="tab">COLLECTIONS</button>
+  <button class="px-btn tab" data-tab="items" role="tab">ALL ITEMS</button>
+  <button class="px-btn tab" data-tab="loot" role="tab">LOOT RUN</button>
+  <button class="px-btn tab" data-tab="skills" role="tab">SKILLS</button>
+  <button class="px-btn tab" data-tab="save" role="tab">SAVE / LOAD</button>
+</nav>
+
+<div id="storage-warning" class="warn hidden">Browser storage is blocked here, so progress only lasts this session. Use SAVE / LOAD &gt; Export, or run it via a local web server.</div>
+
+<main>
+  <section id="tab-collections" class="tab-panel active">
+    <div class="toolbar">
+      <label class="chk"><input type="checkbox" id="col-mods"> include modded items</label>
+    </div>
+    <div id="collection-cards" class="cards"></div>
+    <div id="collection-view"></div>
+  </section>
+
+  <section id="tab-items" class="tab-panel">
+    <div class="filters panel">
+      <input type="search" id="f-search" placeholder="SEARCH ITEMS, TAGS, RECIPES..." aria-label="Search">
+      <select id="f-cat" aria-label="Category"><option value="">ALL CATEGORIES</option></select>
+      <select id="f-loc" aria-label="Location"><option value="">ANY LOCATION</option></select>
+      <select id="f-skill" aria-label="Skill"><option value="">ANY SKILL</option></select>
+      <select id="f-col" aria-label="Collection"><option value="">ANY COLLECTION</option></select>
+      <select id="f-status" aria-label="Status">
+        <option value="">ANY STATUS</option><option value="have">HAVE</option><option value="missing">MISSING</option>
+        <option value="want">WISHLIST</option><option value="read">READ / WATCHED</option><option value="unread">NOT READ</option><option value="stashed">HAS STASH TAG</option>
+      </select>
+      <select id="f-src" aria-label="Source"><option value="all">VANILLA + MODS</option><option value="vanilla">VANILLA ONLY</option><option value="mod">MODS ONLY</option></select>
+      <select id="f-mod" aria-label="Mod"><option value="">ANY MOD</option></select>
+      <label class="range">MAX WT <input type="number" id="f-wmax" min="0" step="0.1" placeholder="any"></label>
+      <select id="f-sort" aria-label="Sort">
+        <option value="name">SORT: NAME</option><option value="weight">SORT: WEIGHT</option><option value="cat">SORT: CATEGORY</option>
+        <option value="spawn">SORT: MOST PLACES</option><option value="rare">SORT: RAREST</option><option value="used">SORT: MOST USED IN</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="f-spawnonly"> spawns only</label>
+    </div>
+    <div class="result-bar"><span id="result-count"></span><span class="pager"><button class="px-btn tiny" id="pg-prev">&lt;</button><span id="pg-info"></span><button class="px-btn tiny" id="pg-next">&gt;</button></span></div>
+    <div id="item-list" class="item-list"></div>
+  </section>
+
+  <section id="tab-loot" class="tab-panel">
+    <div class="panel">
+      <h2>LOOT RUN PLANNER</h2>
+      <p class="hint">Pick what you're hunting for. The planner ranks building types and containers by how many of those items can spawn there, weighted by loot-table weight.</p>
+      <div class="toolbar">
+        <select id="loot-source">
+          <option value="want">MY WISHLIST</option>
+        </select>
+        <label class="chk" title="Only applies to MISSING: collection targets; wishlist items always count"><input type="checkbox" id="loot-mods"> include modded (collections)</label>
+        <label class="chk"><input type="checkbox" id="loot-veh" checked> include vehicles</label>
+      </div>
+      <div id="loot-targets" class="chips"></div>
+    </div>
+    <div class="loot-grid">
+      <div class="panel"><h3>BEST BUILDING TYPES</h3><div id="loot-groups"></div></div>
+      <div class="panel"><h3>BEST CONTAINERS / LOOT TABLES</h3><div id="loot-lists"></div></div>
+    </div>
+  </section>
+
+  <section id="tab-skills" class="tab-panel">
+    <div class="panel">
+      <h2>SKILL TRACKER</h2>
+      <p class="hint">Set your current level. It shows the skill book volume you need next (and whether you have or have read it), plus VHS tapes that give XP for that skill.</p>
+      <div id="skill-table"></div>
+    </div>
+  </section>
+
+  <section id="tab-save" class="tab-panel">
+    <div class="panel">
+      <h2>SAVE / LOAD</h2>
+      <p>Progress saves automatically in this browser. Export a JSON backup to move it to another PC or share it with a friend.</p>
+      <div class="toolbar">
+        <button class="px-btn" id="btn-export">EXPORT JSON</button>
+        <label class="px-btn file-btn">IMPORT JSON<input type="file" id="btn-import" accept="application/json,.json" hidden></label>
+        <button class="px-btn danger" id="btn-reset">RESET ALL</button>
+      </div>
+      <p id="save-msg" class="hint"></p>
+    </div>
+    <div class="panel">
+      <h2>SURVIVAL LOG</h2>
+      <label class="field">CHARACTER / RUN NAME <input type="text" id="run-name" placeholder="e.g. Kate - Rosewood run"></label>
+      <label class="field">NOTES<textarea id="run-notes" rows="8" placeholder="Base location, plans, things to remember..."></textarea></label>
+    </div>
+    <div class="panel">
+      <h2>DATA</h2>
+      <div id="data-info" class="mono-small"></div>
+    </div>
+  </section>
+</main>
+
+<aside id="detail" class="detail hidden" aria-live="polite">
+  <button class="px-btn tiny close" id="detail-close" title="Close">X</button>
+  <div id="detail-body"></div>
+</aside>
+
+<footer>Item data extracted from Project Zomboid game files. Fan-made tool, not affiliated with The Indie Stone.</footer>
+
+<script src="data/items.js"></script>
+<!-- optional: created by build/extract_icons.py from your own game install (not in git) -->
+<script src="assets/icons/vanilla/icons.js"></script>
+<script src="js/glyphs.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

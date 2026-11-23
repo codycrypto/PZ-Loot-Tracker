@@ -1,0 +1,25 @@
+{
+  "vanilla_items": 4946,
+  "modded_items": 0,
+  "collections_vanilla": {
+    "mementos": 218,
+    "magazines": 87,
+    "firearms": 20,
+    "seeds": 55,
+    "literature": 198,
+    "skillbooks": 120,
+    "maps": 15
+  },
+  "media": {
+    "vhs_retail": 107,
+    "cds": 69,
+    "vhs_home": 128,
+    "vhs_skill": 48
+  },
+  "vanilla_with_spawns": 3283,
+  "mod_with_spawns": 0,
+  "items_with_icon": 4552,
+  "mod_icons_copied": 0,
+  "recipes": 965,
+  "size_kb": 2315
+}

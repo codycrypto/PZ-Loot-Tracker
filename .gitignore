@@ -1,0 +1,14 @@
+# local build config (paths / server address)
+lootlog.toml
+# raw game files copied by build/fetch_game_data.py
+build/raw/
+# python
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# vanilla item icons are The Indie Stone's art: extract them from your own copy of the game
+# with build/extract_icons.py (see README) instead of committing them
+assets/icons/vanilla/*
+!assets/icons/vanilla/README.md

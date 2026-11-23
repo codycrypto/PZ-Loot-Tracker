@@ -1,0 +1,40 @@
+# LOOTLOG build config. Copy to lootlog.toml (which is git-ignored) and edit.
+# Only needed if you want to rebuild data/items.js yourself, e.g. to include your mods.
+# Every value can also be set with an environment variable (shown in brackets).
+
+# Where the game files come from: "local" (this computer) or "ssh" (your own dedicated server). [PZ_SOURCE]
+source = "local"
+
+# Game version the data is built for. Picks the right 42.x folder inside B42 mods. [PZ_GAME_VERSION]
+game_version = "42.22"
+
+[local]
+# Project Zomboid install folder. Leave blank to auto-detect the default Steam location. [PZ_GAME_DIR]
+#   Windows: C:\Program Files (x86)\Steam\steamapps\common\ProjectZomboid
+#   macOS:   ~/Library/Application Support/Steam/steamapps/common/ProjectZomboid
+#   Linux:   ~/.local/share/Steam/steamapps/common/ProjectZomboid   (or ~/.steam/steam/...)
+# A dedicated server install folder works too.
+game_dir = ""
+
+# Optional: a file with Mods= and WorkshopItems= lines, normally a server .ini from your Zomboid folder,
+# e.g. ~/Zomboid/Server/servertest.ini. Leave blank for vanilla items only. [PZ_MODS_INI]
+# (TOML tip: on Windows use single quotes for paths, e.g. 'C:\Users\you\Zomboid\Server\servertest.ini')
+mods_ini = ""
+
+# Steam Workshop download folder (…/steamapps/workshop/content/108600). Blank = auto-detect. [PZ_WORKSHOP_DIR]
+workshop_dir = ""
+
+[ssh]
+# Your server, as you'd type it after `ssh` (user@hostname, an IP, or a Host alias from ~/.ssh/config). [PZ_SSH_HOST]
+host = ""
+# port = 22                      # [PZ_SSH_PORT]
+# identity_file = "~/.ssh/id_ed25519"   # [PZ_SSH_IDENTITY]
+
+# Dedicated server install folder on the server (the one with media/ and steamapps/ in it). [PZ_GAME_DIR]
+game_dir = ""
+# Server config with the Mods= / WorkshopItems= lines, e.g. /home/<user>/Zomboid/Server/servertest.ini [PZ_MODS_INI]
+mods_ini = ""
+# Blank = <game_dir>/steamapps/workshop/content/108600   [PZ_WORKSHOP_DIR]
+workshop_dir = ""
+# Set to true if your ssh user can't read the server files directly. Uses `sudo -n` (no password prompt). [PZ_SSH_SUDO]
+sudo = false
